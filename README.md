@@ -28,6 +28,34 @@ included for [tox-gh](https://github.com/tox-dev/tox-gh) if you prefer plain
 `tox run` without `-e` on Actions.
 
 
+## Recipes
+
+Runnable examples live under the top-level `recipes/` directory. They are not
+installed as part of the package; run them from a checkout after installing
+extralist (for example `pip install -e .`).
+
+### Parallel workers with `chunk_sequence`
+
+`chunk_sequence(sequence, size)` yields successive list chunks of up to `size`
+items. That is a convenient way to batch a large sequence before handing work
+to [`concurrent.futures`](https://docs.python.org/3/library/concurrent.futures.html)
+pools—one future per chunk instead of one future per element.
+
+Example script: [`recipes/parallel_chunk_workers.py`](recipes/parallel_chunk_workers.py)
+
+```bash
+pip install -e .
+python recipes/parallel_chunk_workers.py
+python recipes/parallel_chunk_workers.py --executor thread --size 500000 --chunk-size 25000
+```
+
+By default the recipe builds `range(1_000_000)`, splits it into chunks of
+50_000 with `chunk_sequence`, and submits each chunk to a
+`ProcessPoolExecutor` worker that computes per-chunk stats (count, min, max,
+sum of squares). Pass `--executor thread` to use `ThreadPoolExecutor` instead;
+`--max-workers`, `--size`, and `--chunk-size` control pool size and partitioning.
+
+
 ## PagedList
 
 A paged mutable sequence designed
