@@ -39,7 +39,7 @@ def _empty_page():
     return p
 
 
-class PagedList(MutableSequence):
+class SequencePagedList(MutableSequence):
     """
     Sequence designed for high-performance inserting/deleting of elements in the middle.
 
@@ -49,12 +49,12 @@ class PagedList(MutableSequence):
     deletion implies copying over all the remaining elements of the sequence to another
     position.
 
-    PagedList amortizes that by holding several "pages" with sequence parts, so that each
+    SequencePagedList amortizes that by holding several "pages" with sequence parts, so that each
     insertion only affects one page at a time.
 
     """
 
-    # Change this to True on an instance if slices should be PagedList —
+    # Change this to True on an instance if slices should be SequencePagedList —
     # otherwise they will be plain (un-paged) sequences.
 
     slice_to_paged = False
@@ -63,7 +63,7 @@ class PagedList(MutableSequence):
 
     def __new__(cls, *args, **kw):
         warnings.warn(
-            "PagedList implementation currently has unfixed bugs. "
+            "SequencePagedList implementation currently has unfixed bugs. "
             "Its use in production is not recommended."
         )
         return super().__new__(cls)
@@ -236,7 +236,7 @@ class PagedList(MutableSequence):
                 values = list(values)
             if index.step is None or index.step == 1:
                 lower_page, start_index, middle_pages, upper_page, end_index = self._get_slice_interval(index)
-                # TODO :specialize if values is instance of PagedList
+                # TODO :specialize if values is instance of SequencePagedList
                 if len(values) <= self.pagesize and lower_page == upper_page:
                         self.pages[lower_page].data[start_index: end_index] = values
                         self._adjust_dirt(lower_page, len(values) - (end_index - start_index))

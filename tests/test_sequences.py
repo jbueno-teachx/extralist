@@ -7,7 +7,13 @@ import pytest
 import random
 import warnings
 
-from extralist import DefaultList, DoubleLinkedList, PagedList, SlicedView
+from extralist import (
+    DefaultList,
+    DoubleLinkedList,
+    SequencePagedList,
+    SlicedView,
+    TreePagedList,
+)
 
 SAMPLE_LENGTH = 500
 
@@ -16,10 +22,28 @@ def _get_sample():
     return list(range(SAMPLE_LENGTH))
 
 
-def _paged_small(seq):
+def _sequence_paged_small(seq):
     with warnings.catch_warnings():
         warnings.simplefilter("ignore", UserWarning)
-        return PagedList(seq, pagesize=5)
+        return SequencePagedList(seq, pagesize=5)
+
+
+def _sequence_paged_default(seq):
+    with warnings.catch_warnings():
+        warnings.simplefilter("ignore", UserWarning)
+        return SequencePagedList(seq)
+
+
+def _tree_paged_small(seq):
+    with warnings.catch_warnings():
+        warnings.simplefilter("ignore", UserWarning)
+        return TreePagedList(seq, pagesize=5)
+
+
+def _tree_paged_default(seq):
+    with warnings.catch_warnings():
+        warnings.simplefilter("ignore", UserWarning)
+        return TreePagedList(seq)
 
 
 def _double_linked(seq):
@@ -28,20 +52,16 @@ def _double_linked(seq):
         return DoubleLinkedList(seq)
 
 
-def _paged_default(seq):
-    with warnings.catch_warnings():
-        warnings.simplefilter("ignore", UserWarning)
-        return PagedList(seq)
-
-
 # Shared mutable-sequence smoke tests for exported sequence types (+ list control).
 sequences = [
     list,
     DefaultList,
     SlicedView,
     _double_linked,
-    _paged_small,
-    _paged_default,
+    _sequence_paged_small,
+    _sequence_paged_default,
+    _tree_paged_small,
+    _tree_paged_default,
 ]
 
 
@@ -98,6 +118,3 @@ def test_create_sequence_can_insert_elements_at_random(sequence):
         data.insert(i, j)
         control.insert(i, j)
         assert list(data) == control
-
-
-

@@ -8,16 +8,19 @@ from extralist import (
     DefaultList,
     DoubleLinkedList,
     PagedList,
+    SequencePagedList,
     SliceableSequenceMixin,
     SlicedView,
     StructSequence,
+    TreePagedList,
     chunk_sequence,
 )
 
 # Prefer importlib so submodule objects are not confused with same-named exports.
 defaultlist = importlib.import_module("extralist.defaultlist")
 linked = importlib.import_module("extralist.linked")
-pagedlist = importlib.import_module("extralist.pagedlist")
+sequencepagedlist = importlib.import_module("extralist.sequencepagedlist")
+treepagedlist = importlib.import_module("extralist.treepagedlist")
 slicedview = importlib.import_module("extralist.slicedview")
 structsequence = importlib.import_module("extralist.structsequence")
 sliceable_module = importlib.import_module("extralist.sliceable")
@@ -28,7 +31,8 @@ version_module = importlib.import_module("extralist.version")
 MODULE_PUBLIC_NAMES = {
     defaultlist: ("DefaultList",),
     linked: ("DoubleLinkedList",),
-    pagedlist: ("PagedList",),
+    sequencepagedlist: ("SequencePagedList",),
+    treepagedlist: ("TreePagedList",),
     slicedview: ("SlicedView",),
     structsequence: ("StructSequence",),
     sliceable_module: ("SliceableSequenceMixin",),
@@ -36,7 +40,7 @@ MODULE_PUBLIC_NAMES = {
 
 # Non-class callables re-exported at package root.
 MODULE_PUBLIC_FUNCTIONS = {
-    pagedlist: ("chunk_sequence",),
+    sequencepagedlist: ("chunk_sequence",),
 }
 
 
@@ -55,6 +59,8 @@ def test_star_import_names_match_all():
     exported = {
         "DefaultList": DefaultList,
         "DoubleLinkedList": DoubleLinkedList,
+        "SequencePagedList": SequencePagedList,
+        "TreePagedList": TreePagedList,
         "PagedList": PagedList,
         "SlicedView": SlicedView,
         "StructSequence": StructSequence,
@@ -65,6 +71,11 @@ def test_star_import_names_match_all():
     assert set(exported) == set(extralist.__all__)
     for name, obj in exported.items():
         assert getattr(extralist, name) is obj or getattr(extralist, name) == obj
+
+
+def test_pagedlist_alias_is_sequence_paged_list():
+    assert PagedList is SequencePagedList
+    assert extralist.PagedList is extralist.SequencePagedList
 
 
 def test_version_matches_version_module():
@@ -103,6 +114,8 @@ def test_exported_types_are_classes_or_expected_callables():
     class_names = {
         "DefaultList",
         "DoubleLinkedList",
+        "SequencePagedList",
+        "TreePagedList",
         "PagedList",
         "SlicedView",
         "StructSequence",
